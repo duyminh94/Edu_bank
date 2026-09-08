@@ -194,7 +194,7 @@ Luật kiểm tra:
 🔴 **Đổi schema nên phải xoá DB tạo lại.** `EnsureCreated()` không tự thêm cột:
 
 ```bash
-docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P '1831994@Minh' \
+docker exec sqlserver /opt/mssql-tools/bin/sqlcmd -S localhost -U sa -P "$SA_PASSWORD" \
   -Q "DROP DATABASE MiniBankDB"
 ```
 
