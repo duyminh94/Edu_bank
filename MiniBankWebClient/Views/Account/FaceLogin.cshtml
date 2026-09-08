@@ -1,0 +1,50 @@
+@model MiniBankWebClient.Models.FaceLoginViewModel
+@{
+    ViewData["Title"] = "Login by face";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>Login by face</h4>
+                <small>Look straight at the camera - no account number needed</small>
+            </div>
+            <div class="card-body text-center">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="FaceLogin" method="post" autocomplete="off">
+                    <div id="scanResult" class="form-text mb-3">Press "Scan face" and put your face inside the green oval</div>
+
+                    <input type="hidden" asp-for="ImageBase64" id="faceImage" />
+
+                    <button type="button" id="scanButton" class="btn btn-primary btn-lg">Scan face</button>
+                    <button type="submit" id="submitButton" class="btn btn-outline-primary">Login</button>
+                </form>
+            </div>
+            <div class="card-footer text-center">
+                <a asp-action="Login" class="btn btn-link">Login by password</a>
+                <a asp-action="Register" class="btn btn-link">Create new account</a>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_FaceScanModal" />
+
+@section Scripts {
+    <script src="~/lib/face-api/face-api.min.js"></script>
+    <script src="~/js/face.js" asp-append-version="true"></script>
+    <script>
+        setupFaceCapture({
+            resultId: 'scanResult',
+            imageId: 'faceImage',
+            scanButtonId: 'scanButton',
+            submitButtonId: 'submitButton',
+            autoSubmit: true
+        });
+    </script>
+}

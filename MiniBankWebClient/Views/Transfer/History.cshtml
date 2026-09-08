@@ -1,0 +1,60 @@
+@model List<MiniBankDTOs.TransferHistoryDto>
+@{
+    ViewData["Title"] = "History";
+    var myAccount = ViewBag.AccountNumber as string;
+}
+
+<div class="card">
+    <div class="card-header d-flex justify-content-between align-items-center">
+        <h5 class="mb-0">Transaction history</h5>
+        <a asp-action="Index" class="btn btn-primary btn-sm">New transfer</a>
+    </div>
+    <div class="card-body">
+        @if (TempData["Message"] != null)
+        {
+            <div class="alert alert-success">@TempData["Message"]</div>
+        }
+        @if (ViewBag.Error != null)
+        {
+            <div class="alert alert-danger">@ViewBag.Error</div>
+        }
+
+        @if (Model.Count == 0)
+        {
+            <p class="text-muted">You have no transaction yet.</p>
+        }
+        else
+        {
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>From</th>
+                        <th>To</th>
+                        <th>Amount</th>
+                        <th>Direction</th>
+                        <th>Time</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    @foreach (var item in Model)
+                    {
+                        var isOut = item.FromAccountNumber == myAccount;
+                        <tr>
+                            <td>@item.Id</td>
+                            <td>@item.FromAccountNumber</td>
+                            <td>@item.ToAccountNumber</td>
+                            <td>@item.Amount.ToString("N0")</td>
+                            <td>
+                                <span class="badge @(isOut ? "bg-danger" : "bg-success")">
+                                    @(isOut ? "OUT" : "IN")
+                                </span>
+                            </td>
+                            <td>@item.TransferDate.ToString("dd/MM/yyyy HH:mm")</td>
+                        </tr>
+                    }
+                </tbody>
+            </table>
+        }
+    </div>
+</div>

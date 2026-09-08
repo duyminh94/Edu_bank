@@ -1,0 +1,18 @@
+<div class="modal fade" id="faceScanModal" tabindex="-1" data-bs-backdrop="static" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Face scan</h5>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body text-center">
+                <div class="face-frame face-frame-lg">
+                    <video id="camera" autoplay muted playsinline></video>
+                    <div class="face-guide" id="faceGuide"></div>
+                    <svg class="face-ring" id="faceRing" viewBox="0 0 100 100"></svg>
+                </div>
+                <div id="scanStatus" class="form-text mt-3 mb-0">Starting the camera...</div>
+            </div>
+        </div>
+    </div>
+</div>

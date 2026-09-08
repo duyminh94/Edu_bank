@@ -1,0 +1,6 @@
+@MiniBankWebApi_HostAddress = http://localhost:5038
+
+GET {{MiniBankWebApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###

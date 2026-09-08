@@ -1,0 +1,151 @@
+@model MiniBankWebClient.Models.RegisterViewModel
+@{
+    ViewData["Title"] = "Create account";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-6">
+        <div class="card">
+            <div class="card-header">
+                <h4>Create a new account</h4>
+                <div class="d-flex justify-content-between mt-2">
+                    <span id="stepLabel1" class="reg-step-label">1. Account</span>
+                    <span id="stepLabel2" class="reg-step-label">2. Personal info</span>
+                    <span id="stepLabel3" class="reg-step-label">3. Face ID</span>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="Register" method="post" autocomplete="off">
+                    <div asp-validation-summary="ModelOnly" class="text-danger"></div>
+
+                    <div id="step1">
+                        <div class="mb-3">
+                            <label class="form-label">Email</label>
+                            <input asp-for="Email" type="email" class="form-control" required />
+                            <span asp-validation-for="Email" class="text-danger"></span>
+                            <div class="form-text">OTP codes for your transfers will be sent to this email.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Password</label>
+                            <input asp-for="Password" class="form-control" required minlength="6" />
+                            <span asp-validation-for="Password" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Confirm password</label>
+                            <input asp-for="ConfirmPassword" class="form-control" required minlength="6" />
+                            <span asp-validation-for="ConfirmPassword" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div id="step2" hidden>
+                        <div class="mb-3">
+                            <label class="form-label">Full name</label>
+                            <input asp-for="FullName" class="form-control" required />
+                            <span asp-validation-for="FullName" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Phone number</label>
+                            <input asp-for="PhoneNumber" class="form-control" required pattern="0[0-9]{9}"
+                                   title="10 digits, starting with 0" />
+                            <span asp-validation-for="PhoneNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Date of birth</label>
+                            <input asp-for="DateOfBirth" type="date" class="form-control" required
+                                   max="@DateTime.Today.AddYears(-18):yyyy-MM-dd" />
+                            <span asp-validation-for="DateOfBirth" class="text-danger"></span>
+                            <div class="form-text">You must be at least 18 years old to open an account.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Identity number</label>
+                            <input asp-for="IdentityNumber" class="form-control" required pattern="[0-9]{12}"
+                                   title="12 digits" />
+                            <span asp-validation-for="IdentityNumber" class="text-danger"></span>
+                        </div>
+                        <div class="mb-3">
+                            <label class="form-label">Address</label>
+                            <input asp-for="Address" class="form-control" required maxlength="200" />
+                            <span asp-validation-for="Address" class="text-danger"></span>
+                        </div>
+                    </div>
+
+                    <div id="step3" hidden>
+                        <div class="mb-3">
+                            <label class="form-label">Face ID <span class="text-muted">(optional)</span></label>
+                            <div class="form-text mb-2">
+                                You can scan your face now, or do it later. Transfers over 20,000,000
+                                need face verification.
+                            </div>
+                            <div id="scanResult" class="form-text">No photo taken yet</div>
+                        </div>
+
+                        <input type="hidden" asp-for="FaceImageBase64" id="faceImage" />
+                        <button type="button" id="scanButton" class="btn btn-outline-primary">Scan face</button>
+                    </div>
+
+                    <hr />
+                    <button type="button" id="backButton" class="btn btn-outline-secondary" hidden>Back</button>
+                    <button type="button" id="nextButton" class="btn btn-primary">Next</button>
+                    <button type="submit" id="submitButton" class="btn btn-primary" hidden>Create account</button>
+                    <a asp-action="Login" class="btn btn-link">I already have an account</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_FaceScanModal" />
+
+@section Scripts {
+    <script src="~/lib/face-api/face-api.min.js"></script>
+    <script src="~/js/face.js" asp-append-version="true"></script>
+    <script>
+        setupFaceCapture({
+            resultId: 'scanResult',
+            imageId: 'faceImage',
+            scanButtonId: 'scanButton',
+            submitButtonId: 'submitButton',
+            ring: true,
+            optional: true
+        });
+
+        const stepNumbers = [1, 2, 3];
+        const lastStep = 3;
+        const backButton = document.getElementById('backButton');
+        const nextButton = document.getElementById('nextButton');
+        const submitButton = document.getElementById('submitButton');
+        let currentStep = 1;
+
+        function showStep(step) {
+            currentStep = step;
+            stepNumbers.forEach(number => {
+                document.getElementById('step' + number).hidden = number !== step;
+                document.getElementById('stepLabel' + number).classList.toggle('active', number === step);
+            });
+
+            backButton.hidden = step === 1;
+            nextButton.hidden = step === lastStep;
+            submitButton.hidden = step !== lastStep;
+        }
+
+        function isCurrentStepValid() {
+            const inputs = document.getElementById('step' + currentStep).querySelectorAll('input');
+            return Array.from(inputs).every(input => input.reportValidity());
+        }
+
+        nextButton.addEventListener('click', () => {
+            if (isCurrentStepValid()) showStep(currentStep + 1);
+        });
+
+        backButton.addEventListener('click', () => showStep(currentStep - 1));
+
+        const stepWithError = stepNumbers.find(number =>
+            document.querySelector('#step' + number + ' .field-validation-error') !== null);
+        showStep(stepWithError ?? 1);
+    </script>
+}

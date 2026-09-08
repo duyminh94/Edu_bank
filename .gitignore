@@ -1,0 +1,18 @@
+# .NET build output
+bin/
+obj/
+*.user
+.vs/
+
+# Python virtual environment (2.4 GB, moi may tu tao lai bang requirements.txt)
+MiniBankFaceService/.venv/
+__pycache__/
+*.pyc
+
+# Database file cua SQLite, khong day len
+*.db
+*.db-shm
+*.db-wal
+
+# macOS
+.DS_Store

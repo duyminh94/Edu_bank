@@ -1,0 +1,70 @@
+@model MiniBankDTOs.TransferRequestDto
+@{
+    ViewData["Title"] = "Transfer";
+}
+
+<div class="row">
+    <div class="col-md-5">
+        <div class="card mb-3">
+            <div class="card-header">
+                <h5>@ViewBag.FullName</h5>
+                <small>Account number: @ViewBag.AccountNumber</small>
+            </div>
+            <div class="card-body">
+                <div>Available balance</div>
+                <h3 class="text-success">@ViewBag.Balance</h3>
+                <a asp-controller="Account" asp-action="RegisterFace" class="btn btn-outline-secondary btn-sm">
+                    Register face
+                </a>
+            </div>
+        </div>
+    </div>
+
+    <div class="col-md-7">
+        <div class="card">
+            <div class="card-header">
+                <h5>New transfer</h5>
+            </div>
+            <div class="card-body">
+                @if (TempData["Message"] != null)
+                {
+                    <div class="alert alert-success">@TempData["Message"]</div>
+                }
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                @if (ViewBag.HasFace == false)
+                {
+                    <div class="alert alert-warning">
+                        <strong>You have not registered your face yet.</strong><br />
+                        Transfers over 20,000,000 need face verification, so they will be blocked
+                        until you register.
+                        <a asp-controller="Account" asp-action="RegisterFace" class="btn btn-warning btn-sm ms-2">
+                            Register now
+                        </a>
+                    </div>
+                }
+
+                <form asp-action="CreateRequest" method="post" autocomplete="off">
+                    <div class="mb-3">
+                        <label class="form-label">To account number</label>
+                        <input asp-for="ToAccountNumber" class="form-control" />
+                        <span asp-validation-for="ToAccountNumber" class="text-danger"></span>
+                    </div>
+                    <div class="mb-3">
+                        <label class="form-label">Amount</label>
+                        <input asp-for="Amount" type="number" step="1000" class="form-control" />
+                        <span asp-validation-for="Amount" class="text-danger"></span>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Continue</button>
+                    <a asp-action="History" class="btn btn-outline-primary">History</a>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                An OTP code will be sent to your email before the money is moved.
+            </div>
+        </div>
+    </div>
+</div>

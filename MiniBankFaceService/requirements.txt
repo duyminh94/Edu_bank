@@ -1,0 +1,9 @@
+# TensorFlow 2.16.2 la ban cuoi cung con wheel cho macOS Intel (x86_64)
+tensorflow==2.16.2
+tf-keras==2.16.0
+deepface==0.0.95
+# Anti-spoofing (MiniFASNet) cua DeepFace chay tren PyTorch;
+# 2.2.2 la ban cuoi cung con wheel cho macOS Intel
+torch==2.2.2
+fastapi==0.121.2
+uvicorn==0.52.4

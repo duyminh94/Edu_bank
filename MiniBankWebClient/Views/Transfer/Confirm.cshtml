@@ -1,0 +1,86 @@
+@model MiniBankWebClient.Models.ConfirmOtpViewModel
+@{
+    ViewData["Title"] = "Confirm OTP";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h5>Confirm your transfer</h5>
+            </div>
+            <div class="card-body">
+                <p>
+                    Transfer: <strong>@Model.Summary</strong><br />
+                    OTP code was sent to <strong>@Model.MaskedEmail</strong>
+                </p>
+
+                @if (Model.RequiresFace)
+                {
+                    <div class="alert alert-warning">
+                        <strong>Unusual transfer detected</strong><br />
+                        @Model.SuspiciousReason<br />
+                        You must scan your face together with the OTP code.
+                    </div>
+                }
+
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="Confirm" method="post" autocomplete="off">
+                    <div asp-validation-summary="All" class="text-danger"></div>
+
+                    <input type="hidden" asp-for="RequestId" />
+                    <input type="hidden" asp-for="MaskedEmail" />
+                    <input type="hidden" asp-for="Summary" />
+                    <input type="hidden" asp-for="RequiresFace" />
+                    <input type="hidden" asp-for="SuspiciousReason" />
+
+                    <div class="mb-3">
+                        <label class="form-label">OTP code</label>
+                        <input asp-for="OtpCode" class="form-control" maxlength="6" />
+                    </div>
+
+                    @if (Model.RequiresFace)
+                    {
+                        <div class="mb-3">
+                            <div id="scanResult" class="form-text">No photo taken yet</div>
+                        </div>
+                        <input type="hidden" asp-for="FaceImageBase64" id="faceImage" />
+                        <button type="button" id="scanButton" class="btn btn-outline-primary">Scan face</button>
+                    }
+
+                    <button type="submit" id="submitButton" class="btn btn-primary">Confirm transfer</button>
+                    <a asp-action="Index" class="btn btn-link">Cancel</a>
+                </form>
+            </div>
+            <div class="card-footer text-muted">
+                The code expires in a few minutes and you have 3 attempts.
+            </div>
+        </div>
+    </div>
+</div>
+
+@if (Model.RequiresFace)
+{
+    <partial name="_FaceScanModal" />
+}
+
+@section Scripts {
+    @if (Model.RequiresFace)
+    {
+        <script src="~/lib/face-api/face-api.min.js"></script>
+        <script src="~/js/face.js" asp-append-version="true"></script>
+        <script>
+            setupFaceCapture({
+                resultId: 'scanResult',
+                imageId: 'faceImage',
+                scanButtonId: 'scanButton',
+                submitButtonId: 'submitButton',
+                ring: true
+            });
+        </script>
+    }
+}

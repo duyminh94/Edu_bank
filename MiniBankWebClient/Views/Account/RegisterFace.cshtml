@@ -1,0 +1,48 @@
+@{
+    ViewData["Title"] = "Register face";
+}
+
+<div class="row justify-content-center">
+    <div class="col-md-5">
+        <div class="card">
+            <div class="card-header">
+                <h4>Register face</h4>
+                <small>Account: @ViewBag.AccountNumber</small>
+            </div>
+            <div class="card-body">
+                @if (ViewBag.Error != null)
+                {
+                    <div class="alert alert-danger">@ViewBag.Error</div>
+                }
+
+                <form asp-action="RegisterFace" method="post">
+                    <div class="mb-3">
+                        <div id="scanResult" class="form-text">No photo taken yet</div>
+                    </div>
+
+                    <input type="hidden" name="imageBase64" id="faceImage" />
+
+                    <button type="button" id="scanButton" class="btn btn-outline-primary">Scan face</button>
+                    <button type="submit" id="submitButton" class="btn btn-primary">Save my face</button>
+                    <a asp-controller="Transfer" asp-action="Index" class="btn btn-link">Back</a>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+
+<partial name="_FaceScanModal" />
+
+@section Scripts {
+    <script src="~/lib/face-api/face-api.min.js"></script>
+    <script src="~/js/face.js" asp-append-version="true"></script>
+    <script>
+        setupFaceCapture({
+            resultId: 'scanResult',
+            imageId: 'faceImage',
+            scanButtonId: 'scanButton',
+            submitButtonId: 'submitButton',
+            ring: true
+        });
+    </script>
+}
